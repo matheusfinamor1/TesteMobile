@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    kotlin("plugin.serialization") version "1.9.23"
 }
 
 android {
@@ -50,7 +51,20 @@ android {
 }
 
 dependencies {
-
+    // koin
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.logger.slf4j)
+    implementation (libs.koin.androidx.compose)
+    implementation(libs.gson)
+    implementation (libs.ktor.client.android)
+    implementation (libs.ktor.client.logging)
+    implementation (libs.ktor.client.content.negotiation)
+    implementation (libs.ktor.serialization.kotlinx.json)
+    implementation (libs.slf4j.android)
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,6 +73,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

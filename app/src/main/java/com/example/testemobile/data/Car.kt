@@ -1,13 +1,17 @@
 package com.example.testemobile.data
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Car(
     val id: Int,
-    val timestampCadastro: Long,
-    val modeloId: String,
+    @SerialName("timestamp_cadastro") val timestampCadastro: Long,
+    @SerialName("modelo_id") val modeloId: Int,
     val ano: Int,
     val combustivel: String,
-    val numPortas: Int,
+    @SerialName("num_portas") val numPortas: Int,
     val cor: String,
-    val nomeModelo: String,
+    @SerialName("nome_modelo") val nomeModelo: String,
     val valor: Double
 )
