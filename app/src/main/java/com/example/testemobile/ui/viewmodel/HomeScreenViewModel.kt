@@ -24,15 +24,7 @@ class HomeScreenViewModel(
                     carsData?.let {
                         _uiState.update { currentState ->
                             currentState.copy(
-                                id = carsData[0].id,
-                                timestampCadastro = carsData[0].timestampCadastro,
-                                modeloId = carsData[0].modeloId.toString(),
-                                ano = carsData[0].ano,
-                                combustivel = carsData[0].combustivel,
-                                numPortas = carsData[0].numPortas,
-                                cor = carsData[0].cor,
-                                nomeModelo = carsData[0].nomeModelo,
-                                valor = carsData[0].valor
+                                cars = it
                             )
                         }
                     }
