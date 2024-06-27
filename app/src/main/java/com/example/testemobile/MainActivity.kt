@@ -9,7 +9,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.testemobile.database.PurchaseEntity
 import com.example.testemobile.ui.screens.HomeScreen
 import com.example.testemobile.ui.theme.TesteMobileTheme
 import com.example.testemobile.ui.viewmodel.HomeScreenViewModel
