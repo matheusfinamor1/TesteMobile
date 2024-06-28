@@ -2,14 +2,16 @@ package com.example.testemobile.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.testemobile.data.Car
 import com.example.testemobile.database.PurchaseEntity
 import com.example.testemobile.repository.car.CarRepositoryImpl
 import com.example.testemobile.repository.purchase.PurchaseRepositoryImpl
 import com.example.testemobile.response.Resource
 import com.example.testemobile.ui.state.HomeUiState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -19,6 +21,9 @@ class HomeScreenViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
+
+    private val _purchaseData = MutableStateFlow<PurchaseEntity?>(null)
+    val purchaseData: StateFlow<PurchaseEntity?> = _purchaseData.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -33,6 +38,7 @@ class HomeScreenViewModel(
                         }
                     }
                 }
+
                 is Resource.Error -> {}
                 is Resource.Loading -> {}
             }
@@ -42,35 +48,14 @@ class HomeScreenViewModel(
     fun insertPurchase(purchaseEntity: PurchaseEntity) {
         viewModelScope.launch {
             purchaseRepository.insertPurchase(purchaseEntity)
+            _purchaseData.value = purchaseRepository.getPurchase().firstOrNull()
         }
     }
-}
 
-fun Car.toPurchaseEntity(): PurchaseEntity {
-    return PurchaseEntity(
-        id = id,
-        emailComprador = "",
-        timestampCadastro = timestampCadastro,
-        modeloId = modeloId,
-        ano = ano,
-        combustivel = combustivel,
-        numPortas = numPortas,
-        cor = cor,
-        nomeModelo = nomeModelo,
-        valor = valor
-    )
-}
-
-fun PurchaseEntity.toCar(): Car {
-    return Car(
-        id = id,
-        timestampCadastro = timestampCadastro,
-        modeloId = modeloId,
-        ano = ano,
-        combustivel = combustivel,
-        numPortas = numPortas,
-        cor = cor,
-        nomeModelo = nomeModelo,
-        valor = valor
-    )
+    fun getDataPurchase(){
+        viewModelScope.launch {
+            val purchase = purchaseRepository.getPurchase().firstOrNull()
+            _purchaseData.value = purchase
+        }
+    }
 }

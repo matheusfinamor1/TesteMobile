@@ -1,6 +1,6 @@
 package com.example.testemobile.di
 
-import android.app.Application
+import android.content.Context
 import androidx.room.Room
 import com.example.testemobile.database.PurchaseDao
 import com.example.testemobile.database.PurchaseDatabase
@@ -40,7 +40,7 @@ val networkModule = module {
     }
 }
 
-fun provideDatabase(application: Application): PurchaseDatabase =
+fun provideDatabase(application: Context): PurchaseDatabase =
     Room.databaseBuilder(
         application,
         PurchaseDatabase::class.java,

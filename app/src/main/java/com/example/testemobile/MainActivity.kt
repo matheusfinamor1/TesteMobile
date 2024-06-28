@@ -25,7 +25,8 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
                     HomeScreen(
                         uiState = uiState,
-                        viewModel = viewModel)
+                        viewModel = viewModel
+                    )
                 }
             }
         }
