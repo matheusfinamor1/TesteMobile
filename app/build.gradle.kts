@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("plugin.serialization") version "1.9.23"
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -41,7 +42,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.13"
     }
     packaging {
         resources {
@@ -51,7 +52,6 @@ android {
 }
 
 dependencies {
-    // koin
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.koin.logger.slf4j)
@@ -62,6 +62,9 @@ dependencies {
     implementation (libs.ktor.client.content.negotiation)
     implementation (libs.ktor.serialization.kotlinx.json)
     implementation (libs.slf4j.android)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.lifecycle.runtime.compose)

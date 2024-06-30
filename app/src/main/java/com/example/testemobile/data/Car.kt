@@ -1,5 +1,6 @@
 package com.example.testemobile.data
 
+import com.example.testemobile.database.PurchaseEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -14,4 +15,19 @@ data class Car(
     val cor: String,
     @SerialName("nome_modelo") val nomeModelo: String,
     val valor: Double
-)
+){
+    fun toPurchaseEntity(email: String): PurchaseEntity {
+        return PurchaseEntity(
+            id = this.id,
+            emailComprador = email,
+            timestampCadastro = this.timestampCadastro,
+            modeloId = this.modeloId,
+            ano = this.ano,
+            combustivel = this.combustivel,
+            numPortas = this.numPortas,
+            cor = this.cor,
+            nomeModelo = this.nomeModelo,
+            valor = this.valor
+        )
+    }
+}

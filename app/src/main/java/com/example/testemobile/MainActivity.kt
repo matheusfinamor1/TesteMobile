@@ -18,13 +18,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         setContent {
             TesteMobileTheme {
                 val viewModel: HomeScreenViewModel = koinViewModel()
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
                 Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
-                    HomeScreen(uiState)
+                    HomeScreen(
+                        uiState = uiState,
+                        viewModel = viewModel
+                    )
                 }
             }
         }
