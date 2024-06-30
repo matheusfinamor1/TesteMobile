@@ -1,6 +1,7 @@
 package com.example.testemobile.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -13,4 +14,7 @@ interface PurchaseDao {
 
     @Query("SELECT * FROM purchase ORDER BY id ASC")
     fun getPurchase(): Flow<PurchaseEntity>
+
+    @Delete
+    suspend fun deletePurchase(purchase: PurchaseEntity)
 }

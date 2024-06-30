@@ -127,13 +127,15 @@ fun CarItem(car: Car, viewModelHomeScreen: HomeScreenViewModel) {
                 if (expanded) {
                     Button(
                         onClick = {
-                            when (viewModelHomeScreen.purchaseData.value) {
+                            val purchaseData = viewModelHomeScreen.purchaseData.value
+                            when (purchaseData) {
                                 null -> {
                                     openDialogEmailUser.value = true
                                 }
 
                                 else -> {
                                     openDialogConfirmPurchase.value = true
+                                    viewModelHomeScreen.updatePurchase(car.toPurchaseEntity(email = purchaseData.emailComprador))
                                 }
                             }
                         }

@@ -12,4 +12,9 @@ class PurchaseRepositoryImpl(
         purchaseDao.insertPurchase(purchaseEntity)
 
     override suspend fun getPurchase(): Flow<PurchaseEntity> = purchaseDao.getPurchase()
+
+    override suspend fun deletePurchase(purchaseEntity: PurchaseEntity) {
+        purchaseDao.deletePurchase(purchaseEntity)
+    }
+
 }
