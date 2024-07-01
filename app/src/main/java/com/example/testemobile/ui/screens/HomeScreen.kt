@@ -3,7 +3,9 @@
 package com.example.testemobile.ui.screens
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,12 +43,16 @@ import com.example.testemobile.database.PurchaseEntity
 import com.example.testemobile.ui.state.HomeUiState
 import com.example.testemobile.ui.viewmodel.HomeScreenViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     uiState: HomeUiState,
-    viewModel: HomeScreenViewModel
+    viewModel: HomeScreenViewModel,
 ) {
-    ListCars(listCars = uiState, viewModelHomeScreen = viewModel)
+    ListCars(
+        listCars = uiState,
+        viewModelHomeScreen = viewModel,
+    )
     viewModel.getDataPurchase()
     val purchaseData by viewModel.purchaseData.collectAsState()
     purchaseData?.let {
@@ -54,10 +60,11 @@ fun HomeScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ListCars(
     listCars: HomeUiState,
-    viewModelHomeScreen: HomeScreenViewModel
+    viewModelHomeScreen: HomeScreenViewModel,
 ) {
     LazyColumn {
         items(listCars.cars) { car ->
@@ -66,9 +73,13 @@ fun ListCars(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("DefaultLocale")
 @Composable
-fun CarItem(car: Car, viewModelHomeScreen: HomeScreenViewModel) {
+fun CarItem(
+    car: Car,
+    viewModelHomeScreen: HomeScreenViewModel,
+) {
     var expanded by remember { mutableStateOf(false) }
     val openDialogEmailUser = remember { mutableStateOf(false) }
     val openDialogConfirmPurchase = remember { mutableStateOf(false) }
@@ -156,7 +167,8 @@ fun CarItem(car: Car, viewModelHomeScreen: HomeScreenViewModel) {
                             title = "Finalizado",
                             msg = "Sua compra foi finalizada com sucesso!",
                             actionConfirm = { openDialogConfirmPurchase.value = false },
-                            showDialog = openDialogConfirmPurchase
+                            showDialog = openDialogConfirmPurchase,
+                            viewModelHomeScreen = viewModelHomeScreen
                         )
 
                         false -> {}
@@ -199,23 +211,6 @@ fun DialogEmailUser(
 
                     TextButton(
                         onClick = {
-                            Log.d(
-                                "Response", "DialogEmailUser: inserindo usuario: " +
-                                        "${
-                                            PurchaseEntity(
-                                                id = car.id,
-                                                emailComprador = text.value,
-                                                timestampCadastro = car.timestampCadastro,
-                                                modeloId = car.modeloId,
-                                                ano = car.ano,
-                                                combustivel = car.combustivel,
-                                                numPortas = car.numPortas,
-                                                cor = car.cor,
-                                                nomeModelo = car.nomeModelo,
-                                                valor = car.valor
-                                            )
-                                        }"
-                            )
                             viewModelHomeScreen.insertPurchase(
                                 PurchaseEntity(
                                     id = car.id,
@@ -242,12 +237,14 @@ fun DialogEmailUser(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DialogConfirmPurchase(
     title: String,
     msg: String,
     actionConfirm: () -> Unit,
-    showDialog: MutableState<Boolean>
+    showDialog: MutableState<Boolean>,
+    viewModelHomeScreen: HomeScreenViewModel
 ) {
     if (showDialog.value) {
         Dialog(
@@ -260,6 +257,8 @@ fun DialogConfirmPurchase(
                     confirmButton = {
                         TextButton(onClick = {
                             showDialog.value = false
+                            val dataToSend = "Olaaaaaaaaaa"
+                            viewModelHomeScreen.createWorkManager(dataToSend)
                             actionConfirm()
                         }) {
                             Text("Confirmar")
@@ -270,3 +269,4 @@ fun DialogConfirmPurchase(
         )
     }
 }
+
