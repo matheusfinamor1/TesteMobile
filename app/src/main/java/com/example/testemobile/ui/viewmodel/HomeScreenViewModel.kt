@@ -2,21 +2,29 @@ package com.example.testemobile.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.example.testemobile.database.PurchaseEntity
 import com.example.testemobile.repository.car.CarRepositoryImpl
 import com.example.testemobile.repository.purchase.PurchaseRepositoryImpl
 import com.example.testemobile.response.Resource
 import com.example.testemobile.ui.state.HomeUiState
+import com.example.testemobile.worker.PostWork
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
+
 
 class HomeScreenViewModel(
     private val carRepository: CarRepositoryImpl,
-    private val purchaseRepository: PurchaseRepositoryImpl
+    private val purchaseRepository: PurchaseRepositoryImpl,
+    private val workManager: WorkManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
@@ -40,6 +48,7 @@ class HomeScreenViewModel(
                         }
                     }
                 }
+
                 is Resource.Error -> {}
                 is Resource.Loading -> {}
             }
@@ -75,5 +84,17 @@ class HomeScreenViewModel(
                 }
             }
         }
+    }
+
+    fun createWorkManager(dataToSend: String = "") {
+        val workData = workDataOf("data_key" to dataToSend)
+        val uploadWorkRequest = PeriodicWorkRequestBuilder<PostWork>(15, TimeUnit.MINUTES)
+            .setInputData(workData)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            "upload_task",
+            ExistingPeriodicWorkPolicy.KEEP,
+            uploadWorkRequest
+        )
     }
 }
