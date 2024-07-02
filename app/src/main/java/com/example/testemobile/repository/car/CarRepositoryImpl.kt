@@ -15,7 +15,7 @@ class CarRepositoryImpl(
     override suspend fun getCars(): Resource<Cars> {
         try {
             val response: HttpResponse =
-                httpClient.get("https://wswork.com.br/cars.json")
+                httpClient.get(BASE_URL)
             when (response.status.value) {
                 in 200..299 -> {
                     val responseJson = response.bodyAsText()
@@ -24,15 +24,15 @@ class CarRepositoryImpl(
                 }
 
                 in 300..399 -> {
-                    status = Resource.Error("Client not found")
+                    status = Resource.Error(ERROR_NOT_FOUND)
                 }
 
                 in 400..499 -> {
-                    status = Resource.Error("Error client")
+                    status = Resource.Error(ERROR_CLIENT)
                 }
 
                 in 500..599 -> {
-                    status = Resource.Error("Error service")
+                    status = Resource.Error(ERROR_SERVICE)
                 }
             }
 
@@ -40,5 +40,12 @@ class CarRepositoryImpl(
             status = Resource.Error(e.message.toString())
         }
         return status
+    }
+
+    companion object{
+        private const val BASE_URL = "https://wswork.com.br/cars.json"
+        private const val ERROR_NOT_FOUND = "Client not found"
+        private const val ERROR_CLIENT = "Error client"
+        private const val ERROR_SERVICE = "Error service"
     }
 }
