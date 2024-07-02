@@ -4,7 +4,6 @@ package com.example.testemobile.ui.screens
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +27,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,8 +34,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.testemobile.R
 import com.example.testemobile.data.Car
 import com.example.testemobile.database.PurchaseEntity
 import com.example.testemobile.ui.state.HomeUiState
@@ -53,16 +53,11 @@ fun HomeScreen(
         listCars = uiState,
         viewModelHomeScreen = viewModel,
     )
-    viewModel.getDataPurchase()
-    val purchaseData by viewModel.purchaseData.collectAsState()
-    purchaseData?.let {
-        Log.d("Response", "HomeScreen: ${it}")
-    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ListCars(
+private fun ListCars(
     listCars: HomeUiState,
     viewModelHomeScreen: HomeScreenViewModel,
 ) {
@@ -76,7 +71,7 @@ fun ListCars(
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("DefaultLocale")
 @Composable
-fun CarItem(
+private fun CarItem(
     car: Car,
     viewModelHomeScreen: HomeScreenViewModel,
 ) {
@@ -97,7 +92,7 @@ fun CarItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row {
-                        Text(text = "Nome: ")
+                        Text(text = stringResource(R.string.name_car))
                         Text(text = car.nomeModelo)
                     }
                     Row {
@@ -112,11 +107,11 @@ fun CarItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row {
-                        Text(text = "Combustível: ")
+                        Text(text = stringResource(R.string.name_fuel))
                         Text(text = car.combustivel)
                     }
                     Row {
-                        Text(text = "Portas: ")
+                        Text(text = stringResource(R.string.number_doors))
                         Text(text = car.numPortas.toString())
                     }
                 }
@@ -127,11 +122,11 @@ fun CarItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row {
-                        Text(text = "Cor: ")
+                        Text(text = stringResource(R.string.name_color))
                         Text(text = car.cor)
                     }
                     Row {
-                        Text(text = "Valor: R$")
+                        Text(text = stringResource(R.string.car_value))
                         Text(text = String.format("%.3f", car.valor))
                     }
                 }
@@ -151,7 +146,7 @@ fun CarItem(
                             }
                         }
                     ) {
-                        Text(text = "EU QUERO")
+                        Text(text = stringResource(R.string.text_button_card))
                     }
                     when (openDialogEmailUser.value) {
                         true -> DialogEmailUser(
@@ -164,11 +159,11 @@ fun CarItem(
                     }
                     when (openDialogConfirmPurchase.value) {
                         true -> DialogConfirmPurchase(
-                            title = "Finalizado",
-                            msg = "Sua compra foi finalizada com sucesso!",
+                            title = stringResource(R.string.title_dialog_confirm_purchase),
+                            msg = stringResource(R.string.msg_dialog_confirm_purchase),
                             actionConfirm = { openDialogConfirmPurchase.value = false },
                             showDialog = openDialogConfirmPurchase,
-                            viewModelHomeScreen = viewModelHomeScreen
+                            viewModelHomeScreen = viewModelHomeScreen,
                         )
 
                         false -> {}
@@ -180,7 +175,7 @@ fun CarItem(
 }
 
 @Composable
-fun DialogEmailUser(
+private fun DialogEmailUser(
     openAlertDialog: MutableState<Boolean>,
     car: Car,
     viewModelHomeScreen: HomeScreenViewModel
@@ -203,7 +198,7 @@ fun DialogEmailUser(
                     TextField(
                         value = text.value,
                         onValueChange = { text.value = it },
-                        label = { Text("Digite seu email") },
+                        label = { Text(stringResource(R.string.label_email)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.LightGray)
@@ -211,25 +206,25 @@ fun DialogEmailUser(
 
                     TextButton(
                         onClick = {
-                            viewModelHomeScreen.insertPurchase(
-                                PurchaseEntity(
-                                    id = car.id,
-                                    emailComprador = text.value,
-                                    timestampCadastro = car.timestampCadastro,
-                                    modeloId = car.modeloId,
-                                    ano = car.ano,
-                                    combustivel = car.combustivel,
-                                    numPortas = car.numPortas,
-                                    cor = car.cor,
-                                    nomeModelo = car.nomeModelo,
-                                    valor = car.valor
-                                )
+                            val data = PurchaseEntity(
+                                id = car.id,
+                                emailComprador = text.value,
+                                timestampCadastro = car.timestampCadastro,
+                                modeloId = car.modeloId,
+                                ano = car.ano,
+                                combustivel = car.combustivel,
+                                numPortas = car.numPortas,
+                                cor = car.cor,
+                                nomeModelo = car.nomeModelo,
+                                valor = car.valor
                             )
+                            viewModelHomeScreen.insertPurchase(data)
+                            viewModelHomeScreen.createWorkManager(data)
                             openAlertDialog.value = false
                         },
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Text("Confirmar")
+                        Text(stringResource(R.string.text_button_confirm_email))
                     }
                 }
             }
@@ -239,7 +234,7 @@ fun DialogEmailUser(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DialogConfirmPurchase(
+private fun DialogConfirmPurchase(
     title: String,
     msg: String,
     actionConfirm: () -> Unit,
@@ -257,11 +252,13 @@ fun DialogConfirmPurchase(
                     confirmButton = {
                         TextButton(onClick = {
                             showDialog.value = false
-                            val dataToSend = "Olaaaaaaaaaa"
-                            viewModelHomeScreen.createWorkManager(dataToSend)
+                            val data = viewModelHomeScreen.purchaseData.value
+                            data?.let {
+                                viewModelHomeScreen.createWorkManager(data)
+                            }
                             actionConfirm()
                         }) {
-                            Text("Confirmar")
+                            Text(stringResource(R.string.text_button_confirm_purchase))
                         }
                     }
                 )

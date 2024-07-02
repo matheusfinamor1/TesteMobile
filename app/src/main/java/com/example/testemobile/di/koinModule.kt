@@ -3,7 +3,6 @@ package com.example.testemobile.di
 import android.content.Context
 import androidx.room.Room
 import androidx.work.WorkManager
-import androidx.work.WorkerParameters
 import com.example.testemobile.database.PurchaseDao
 import com.example.testemobile.database.PurchaseDatabase
 import com.example.testemobile.repository.car.CarRepositoryImpl
@@ -20,21 +19,18 @@ import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.workmanager.dsl.worker
 import org.koin.dsl.module
 
 val appModule = module {
     single<CarRepositoryImpl> { CarRepositoryImpl(get()) }
     single<PurchaseRepositoryImpl> { PurchaseRepositoryImpl(get()) }
-    viewModel { HomeScreenViewModel(get(), get(), get()) }
     single { provideDatabase(get()) }
     single { provideDao(get()) }
     single { PostDataRepositoryImpl(get()) }
-    factory { (workerParams: WorkerParameters) ->
-        PostWork(androidContext(), workerParams, get())
-    }
-    single<WorkManager> {
-        WorkManager.getInstance(androidContext())
-    }
+    single { WorkManager.getInstance(androidContext()) }
+    viewModel { HomeScreenViewModel(get(), get(), get()) }
+    worker { PostWork(androidContext(), get(), get()) }
 }
 
 val networkModule = module {
@@ -56,8 +52,11 @@ fun provideDatabase(application: Context): PurchaseDatabase =
     Room.databaseBuilder(
         application,
         PurchaseDatabase::class.java,
-        "table_purchase_database"
+        table_db.TABLE_NAME
     ).fallbackToDestructiveMigration().build()
 
 fun provideDao(database: PurchaseDatabase): PurchaseDao = database.purchaseDao()
 
+object table_db {
+    const val TABLE_NAME = "table_purchase_database"
+}

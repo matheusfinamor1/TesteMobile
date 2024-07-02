@@ -32,7 +32,7 @@ class HomeScreenViewModel(
     private val _purchaseData = MutableStateFlow<PurchaseEntity?>(null)
     val purchaseData: StateFlow<PurchaseEntity?> = _purchaseData.asStateFlow()
 
-    private val _statusUpdate = MutableStateFlow<Boolean>(false)
+    private val _statusUpdate = MutableStateFlow(false)
     val statusUpdate: StateFlow<Boolean> = _statusUpdate.asStateFlow()
 
     init {
@@ -52,20 +52,7 @@ class HomeScreenViewModel(
                 is Resource.Error -> {}
                 is Resource.Loading -> {}
             }
-        }
-    }
-
-    fun insertPurchase(purchaseEntity: PurchaseEntity) {
-        viewModelScope.launch {
-            purchaseRepository.insertPurchase(purchaseEntity)
-            _purchaseData.value = purchaseRepository.getPurchase().firstOrNull()
-        }
-    }
-
-    fun getDataPurchase() {
-        viewModelScope.launch {
-            val purchase = purchaseRepository.getPurchase().firstOrNull()
-            _purchaseData.value = purchase
+            getDataPurchase()
         }
     }
 
@@ -83,18 +70,35 @@ class HomeScreenViewModel(
                     _statusUpdate.value = true
                 }
             }
+
         }
     }
 
-    fun createWorkManager(dataToSend: String = "") {
-        val workData = workDataOf("data_key" to dataToSend)
+    fun createWorkManager(dataPost: PurchaseEntity) {
+        workManager.cancelUniqueWork("upload_task")
+        val workData = workDataOf("data_key" to dataPost.toString())
         val uploadWorkRequest = PeriodicWorkRequestBuilder<PostWork>(15, TimeUnit.MINUTES)
             .setInputData(workData)
             .build()
         workManager.enqueueUniquePeriodicWork(
             "upload_task",
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.REPLACE,
             uploadWorkRequest
         )
+    }
+
+    fun insertPurchase(purchaseEntity: PurchaseEntity) {
+        viewModelScope.launch {
+            purchaseRepository.insertPurchase(purchaseEntity)
+            _purchaseData.value = purchaseRepository.getPurchase().firstOrNull()
+        }
+    }
+
+    private fun getDataPurchase() {
+        viewModelScope.launch {
+            val purchase = purchaseRepository.getPurchase().firstOrNull()
+            _purchaseData.value = purchase
+            _purchaseData.value?.let { createWorkManager(it) }
+        }
     }
 }

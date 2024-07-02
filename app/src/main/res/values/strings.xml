@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">TesteMobile</string>
+    <string name="name_car">"Nome: "</string>
+    <string name="name_fuel">"Combustível: "</string>
+    <string name="number_doors">"Portas: "</string>
+    <string name="name_color">"Cor: "</string>
+    <string name="car_value">Valor: R$</string>
+    <string name="text_button_card">EU QUERO</string>
+    <string name="title_dialog_confirm_purchase">Finalizado</string>
+    <string name="msg_dialog_confirm_purchase">Sua compra foi finalizada com sucesso!</string>
+    <string name="label_email">Digite seu email</string>
+    <string name="text_button_confirm_email">Confirmar</string>
+    <string name="text_button_confirm_purchase">Confirmar</string>
 </resources>

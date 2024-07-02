@@ -11,8 +11,8 @@ class PostWork(
     private val postDataRepository: PostDataRepositoryImpl
 ) : CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result {
-        val dataToSend = inputData.getString("data_key") ?: ""
-        val response = postDataRepository.sendData(dataToSend)
+        val data = inputData.getString("data_key") ?: ""
+        val response = postDataRepository.sendData(data)
         return if (response) {
             Result.success()
         } else {
